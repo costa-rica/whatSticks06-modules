@@ -35,8 +35,10 @@ class Users(Base, UserMixin):
     password = Column(Text, nullable = False)
     lat = Column(Float)
     lon = Column(Float)
-    location_id = Column(Integer, ForeignKey('locations.id'))#one
-    oura_token_id = Column(Integer, ForeignKey('oura_token.id'))#one
+    # location_id = Column(Integer, ForeignKey('locations.id'))#one
+    location_id = relationship("Locations", backref="location", lazy=True)
+    # oura_token_id = Column(Integer, ForeignKey('oura_token.id'))#one
+    oura_token_id = relationship("Oura_token", backref="oura_token_id", lazy=True)
     oura_sleep = relationship('Oura_sleep_descriptions', backref='Oura_sleep', lazy=True)
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
@@ -45,13 +47,14 @@ class Users(Base, UserMixin):
 
 class Locations(Base):
     __tablename__ = 'locations'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer,  primary_key = True)
     city = Column(Text)
     region = Column(Text)
     country = Column(Text)
     lat = Column(Float)
     lon = Column(Float)
-    users = relationship('Users', backref = 'location', lazy = True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key = True)
+    # users = relationship('Users', backref = 'location', lazy = True)
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
@@ -60,9 +63,10 @@ class Locations(Base):
 
 class Oura_token(Base):
     __tablename__ = 'oura_token'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, ForeignKey("users.id"),primary_key = True )
     token = Column(Text)
-    users = relationship('Users', backref = 'oura_token', lazy = True)
+    # users = relationship('Users', backref = 'oura_token', lazy = True)
+    # user_id = Column(Integer, ForeignKey("users.id"))
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
