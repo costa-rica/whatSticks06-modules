@@ -11,7 +11,7 @@ from flask_login import UserMixin, LoginManager
 config = ConfigDev()
 
 Base = declarative_base()
-engine = create_engine(config.SQL_URI, echo = True, connect_args={"check_same_thread": False})
+engine = create_engine(config.SQL_URI, echo = False, connect_args={"check_same_thread": False})
 Session = sessionmaker(bind = engine)
 sess = Session()
 
@@ -35,15 +35,29 @@ class Users(Base, UserMixin):
     password = Column(Text, nullable = False)
     lat = Column(Float)
     lon = Column(Float)
-    # location_id = Column(Integer, ForeignKey('locations.id'))#one
-    location_id = relationship("Locations", backref="location", lazy=True)
-    # oura_token_id = Column(Integer, ForeignKey('oura_token.id'))#one
     oura_token_id = relationship("Oura_token", backref="oura_token_id", lazy=True)
-    oura_sleep = relationship('Oura_sleep_descriptions', backref='Oura_sleep', lazy=True)
+    oura_sleep = relationship('Oura_sleep_descriptions', backref='oura_sleep', lazy=True)
+    loc_day = relationship('User_location_day', backref='user_loc_day', lazy=True)
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
-        return f'Users(id: {self.id}, email: {self.email}, location_id: {self.location_id})'
+        return f'Users(id: {self.id}, email: {self.email})'
+
+class User_location_day(Base):
+    __tablename__ = 'user_loc_day'
+    id = Column(Integer, primary_key = True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    location_id = Column(Integer, nullable = False)
+    date = Column(Text)
+    local_time = Column(Text)
+    avgtemp_f = Column(Float)
+    score_total = Column(Integer)
+    row_type = Column(Text)#user entered or scheduler entered row?
+    time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
+
+    def __repr__(self):
+        return f'User_location_day(id: {self.id}, user_id: {self.user_id},' \
+            f'date: {self.date}, avgtemp_f: {self.avgtemp_f}, score_total: {self.score_total})'
 
 class Locations(Base):
     __tablename__ = 'locations'
@@ -53,8 +67,6 @@ class Locations(Base):
     country = Column(Text)
     lat = Column(Float)
     lon = Column(Float)
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key = True)
-    # users = relationship('Users', backref = 'location', lazy = True)
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
@@ -63,10 +75,10 @@ class Locations(Base):
 
 class Oura_token(Base):
     __tablename__ = 'oura_token'
-    id = Column(Integer, ForeignKey("users.id"),primary_key = True )
+    id = Column(Integer, primary_key = True )
+    user_id = Column(Integer, ForeignKey("users.id"))
     token = Column(Text)
-    # users = relationship('Users', backref = 'oura_token', lazy = True)
-    # user_id = Column(Integer, ForeignKey("users.id"))
+    oura_sleep = relationship('Oura_sleep_descriptions', backref='Oura_sleep_descrip', lazy=True)
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
@@ -75,8 +87,8 @@ class Oura_token(Base):
 
 class Weather_history(Base):
     __tablename__ = 'weather_history'
-    id = Column(Integer, ForeignKey("users.id"),primary_key = True,autoincrement=True)
-    time_stamp_utc = Column(DateTime, nullable=False, default=datetime.utcnow)
+    id = Column(Integer,primary_key = True)
+    location_id = Column(Integer, nullable = False)
     lat = Column(Float)
     lon = Column(Float)
     city_location_name = Column(Text)
@@ -89,6 +101,7 @@ class Weather_history(Base):
     avgtemp_f = Column(Float)
     sunset = Column(Text)
     sunrise = Column(Text)
+    time_stamp_utc = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
         return f"Weather_history(id: {self.id}, date: {self.date}, " \
@@ -100,6 +113,7 @@ class Oura_sleep_descriptions(Base):
     __tablename__ = 'oura_sleep_descriptions'
     id = Column(Integer, primary_key = True)
     user_id=Column(Integer, ForeignKey('users.id'), nullable=False)
+    token_id=Column(Integer, ForeignKey('oura_token.id'), nullable=False)
     summary_date = Column(Text)
     period_id = Column(Integer)
     is_longest = Column(Integer)
@@ -144,6 +158,9 @@ class Oura_sleep_descriptions(Base):
             f"hr_lowest: {self.hr_lowest}, hr_average: {self.hr_average}," \
             f"bedtime_start: {self.bedtime_start}, bedtime_end: {self.bedtime_end}," \
             f"duration: {self.duration}, onset_latency: {self.onset_latency})"
+
+
+
 
 
 #Build db

@@ -1,1 +1,1 @@
-from .models import login_manager, sess, Users, Locations, Weather_history, Oura_token, Oura_sleep_descriptions
+from .models import login_manager, sess, Users, Locations, Weather_history, Oura_token, Oura_sleep_descriptions, User_location_day
