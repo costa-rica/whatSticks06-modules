@@ -23,8 +23,6 @@ login_manager.login_message_category = 'info'
 @login_manager.user_loader
 def load_user(any_name_for_id_obj):# any_name_for_id_obj can be any name because its an arg that is the user id.
     # This is probably created somewhere inside flask_login when the user gets logged in. But i've not been able to track it.
-    print('* in load_user *')
-    print(any_name_for_id_obj)
     return sess.query(Users).filter_by(id = any_name_for_id_obj).first()
     
 
@@ -51,13 +49,13 @@ class User_location_day(Base):
     date = Column(Text)
     local_time = Column(Text)
     avgtemp_f = Column(Float)
-    score_total = Column(Integer)
+    score = Column(Integer)#sleep score
     row_type = Column(Text)#user entered or scheduler entered row?
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
         return f'User_location_day(id: {self.id}, user_id: {self.user_id},' \
-            f'date: {self.date}, avgtemp_f: {self.avgtemp_f}, score_total: {self.score_total})'
+            f'date: {self.date}, avgtemp_f: {self.avgtemp_f}, score_total: {self.score})'
 
 class Locations(Base):
     __tablename__ = 'locations'
