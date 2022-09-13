@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker, Session, relationship
 from datetime import datetime
 from wsh_config import ConfigDev, ConfigProd
 from flask_login import UserMixin, LoginManager
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+import json
 
 
 config = ConfigDev()
@@ -31,18 +33,34 @@ class Users(Base, UserMixin):
     id = Column(Integer, primary_key = True)
     email = Column(Text, unique = True, nullable = False)
     password = Column(Text, nullable = False)
-    lat = Column(Float)
-    lon = Column(Float)
+    lat = Column(Float(precision=4, decimal_return_scale=None))
+    lon = Column(Float(precision=4, decimal_return_scale=None))
     oura_token_id = relationship("Oura_token", backref="oura_token_id", lazy=True)
     oura_sleep = relationship('Oura_sleep_descriptions', backref='oura_sleep', lazy=True)
     loc_day = relationship('User_location_day', backref='user_loc_day', lazy=True)
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
+    def get_reset_token(self, expires_sec=1800):
+        s=Serializer(config.SECRET_KEY, expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token):
+        s=Serializer(config.SECRET_KEY)
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return sess.query(Users).get(user_id)
+
     def __repr__(self):
         return f'Users(id: {self.id}, email: {self.email})'
 
+
+
+
 class User_location_day(Base):
-    __tablename__ = 'user_loc_day'
+    __tablename__ = 'user_location_day'
     id = Column(Integer, primary_key = True)
     user_id = Column(Integer, ForeignKey("users.id"))
     location_id = Column(Integer, nullable = False)
@@ -63,8 +81,8 @@ class Locations(Base):
     city = Column(Text)
     region = Column(Text)
     country = Column(Text)
-    lat = Column(Float)
-    lon = Column(Float)
+    lat = Column(Float(precision=4, decimal_return_scale=None))
+    lon = Column(Float(precision=4, decimal_return_scale=None))
     time_stamp_utc = Column(DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
@@ -116,6 +134,7 @@ class Oura_sleep_descriptions(Base):
     period_id = Column(Integer)
     is_longest = Column(Integer)
     timezone = Column(Integer)
+    location = Column(Integer)#haven't found in oura data yet
     bedtime_end = Column(Text)
     bedtime_start = Column(Text)
     breath_average = Column(Float)
