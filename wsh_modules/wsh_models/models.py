@@ -63,7 +63,7 @@ class User_location_day(Base):
     __tablename__ = 'user_location_day'
     id = Column(Integer, primary_key = True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    location_id = Column(Integer, nullable = False)
+    location_id = Column(Integer, nullable = False)#TODO: should this remain nullable=False?
     date = Column(Text)
     local_time = Column(Text)
     avgtemp_f = Column(Float)
