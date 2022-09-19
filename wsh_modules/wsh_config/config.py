@@ -8,7 +8,7 @@ elif os.environ.get('COMPUTERNAME')=='NICKSURFACEPRO4':
     with open(r"C:\Users\Costa Rica\Documents\_configs\config_wsh06.json") as config_file:
         config = json.load(config_file)
 else:
-    with open('/home/ubuntu/environments/config_wsh06.json') as config_file:
+    with open('/home/ubuntu/config_wsh06.json') as config_file:
         config = json.load(config_file)
 
 
@@ -29,6 +29,7 @@ class ConfigDev:
     GUEST_PASSWORD = config.get('GUEST_PASSWORD')
     #WSH API
     WSH_API_URL_BASE = config.get('WSH_API_URL_BASE')
+    WSH_API_PASSWORD = config.get('WSH_API_PASSWORD')
     #WEATHER
     WEATHER_API_KEY = config.get('WEATHER_API_KEY')
     WEATHER_API_URL_BASE = config.get('WEATHER_API_URL_BASE')
@@ -54,6 +55,7 @@ class ConfigProd:
     GUEST_PASSWORD = config.get('GUEST_PASSWORD')
     #WSH API
     WSH_API_URL_BASE = config.get('WSH_API_URL_BASE')
+    WSH_API_PASSWORD = config.get('WSH_API_PASSWORD')
     #WEATHER
     WEATHER_API_KEY = config.get('WEATHER_API_KEY')
     WEATHER_API_URL_BASE = config.get('WEATHER_API_URL_BASE')
