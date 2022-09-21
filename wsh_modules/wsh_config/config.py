@@ -22,8 +22,8 @@ class ConfigDev:
     MAIL_SERVER = config.get('MAIL_SERVER_MSOFFICE')
     MAIL_PORT = config.get('MAIL_PORT')
     MAIL_USE_TLS = True
-    MAIL_USERNAME = config.get('MAIL_EMAIL_DD')
-    MAIL_PASSWORD = config.get('MAIL_PASSWORD_DD')
+    EMAIL = config.get('EMAIL')
+    EMAIL_PASSWORD = config.get('EMAIL_PASSWORD')
     #web
     GUEST_EMAIL = config.get('GUEST_EMAIL')
     GUEST_PASSWORD = config.get('GUEST_PASSWORD')
@@ -48,8 +48,8 @@ class ConfigProd:
     MAIL_SERVER = config.get('MAIL_SERVER_MSOFFICE')
     MAIL_PORT = config.get('MAIL_PORT')
     MAIL_USE_TLS = True
-    MAIL_USERNAME = config.get('MAIL_EMAIL_DD')
-    MAIL_PASSWORD = config.get('MAIL_PASSWORD_DD')
+    EMAIL = config.get('EMAIL')
+    EMAIL_PASSWORD = config.get('EMAIL_PASSWORD')
     #web
     GUEST_EMAIL = config.get('GUEST_EMAIL')
     GUEST_PASSWORD = config.get('GUEST_PASSWORD')

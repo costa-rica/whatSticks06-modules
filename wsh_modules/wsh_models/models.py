@@ -73,7 +73,7 @@ class User_location_day(Base):
 
     def __repr__(self):
         return f'User_location_day(id: {self.id}, user_id: {self.user_id},' \
-            f'date: {self.date}, avgtemp_f: {self.avgtemp_f}, score_total: {self.score})'
+            f'date: {self.date}, avgtemp_f: {self.avgtemp_f}, score: {self.score})'
 
 class Locations(Base):
     __tablename__ = 'locations'
