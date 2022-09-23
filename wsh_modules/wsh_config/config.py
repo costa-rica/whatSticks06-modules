@@ -40,7 +40,9 @@ class ConfigDev:
 
 class ConfigProd:
     DEBUG = False
-    PORT='80'
+    TESTING = False
+    PROPAGATE_EXCEPTIONS = True
+    #PORT='80'
     SECRET_KEY = config.get('SECRET_KEY')
     SQL_URI = config.get('SQL_URI')
     
